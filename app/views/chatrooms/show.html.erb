@@ -1,0 +1,85 @@
+
+
+    <!-- Dark Mode Toggle Button -->
+    <div class="fixed top-5 right-5 z-10">
+      <button id="theme-toggle" class="bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out">
+        <i id="theme-icon" class="fas fa-moon text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Display success or error messages -->
+    <div class="container mx-auto mt-4">
+      <% if flash[:notice] %>
+        <div class="notification bg-green-500 text-white p-4 rounded-lg mb-4 shadow-xl transform transition duration-500 ease-in-out hover:scale-105 opacity-100" id="flash-notice">
+          <%= flash[:notice] %>
+        </div>
+      <% elsif flash[:alert] %>
+        <div class="notification bg-red-500 text-white p-4 rounded-lg mb-4 shadow-xl transform transition duration-500 ease-in-out hover:scale-105 opacity-100" id="flash-alert">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+    </div>
+
+    <h1 class="text-4xl font-extrabold text-center text-indigo-700 mb-8 tracking-wide hover:text-indigo-900 transition duration-300 ease-in-out transform hover:scale-105">
+      Welcome to <%= @chatroom.name %>
+    </h1>
+
+    <div id="chatroom-id" data-id="<%= @chatroom.id %>" class="hidden"></div>
+
+    <!-- Message Container -->
+    <div id="messages" class="space-y-6 max-w-3xl mx-auto overflow-y-auto h-[400px] bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-6 rounded-lg shadow-2xl mb-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300 ease-in-out backdrop-blur-md dark:bg-gray-800 dark:border-gray-700">
+      <% @messages.each do |message| %>
+        <div class="bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-105 dark:bg-gray-700 dark:text-white">
+          <div class="font-semibold text-indigo-600 hover:text-indigo-800 transition duration-200 ease-in-out dark:text-indigo-400"><%= message.user_name %>:</div>
+          <div class="text-gray-800 mt-2 break-words text-lg dark:text-gray-300">
+            <%= message.content %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Form for Message Input -->
+    <%= form_with model: [@chatroom, Message.new], url: chatroom_messages_path(@chatroom), method: :post, class: "bg-white p-6 rounded-lg shadow-xl max-w-3xl mx-auto border border-gray-200 hover:shadow-2xl transition-shadow duration-300 ease-in-out dark:bg-gray-800 dark:border-gray-700 dark:text-white" do |form| %>
+      <div class="space-y-6">
+        <!-- Message Content Area -->
+        <%= form.text_area :content, placeholder: "Type your message here", class: "w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg transition duration-300 ease-in-out transform hover:scale-105 dark:bg-gray-700 dark:text-white" %>
+
+        <!-- Username Field (Optional) -->
+        <%= form.text_field :username, placeholder: "Enter your name (optional)", class: "w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg transition duration-300 ease-in-out transform hover:scale-105 dark:bg-gray-700 dark:text-white" %>
+
+        <!-- Submit Button -->
+        <%= form.submit "Send", class: "w-full py-3 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transform hover:scale-105 transition-transform duration-200 ease-in-out dark:bg-indigo-700 dark:hover:bg-indigo-800" %>
+      </div>
+    <% end %>
+
+    <!-- JavaScript for theme toggle -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        // Check if dark mode is set in localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+          body.classList.add('dark');
+          themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+          body.classList.remove('dark');
+          themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+
+        // Toggle theme on button click
+        themeToggleButton.addEventListener('click', () => {
+          if (body.classList.contains('dark')) {
+            body.classList.remove('dark');
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('theme', 'light');
+          } else {
+            body.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      });
+    </script>
+    
